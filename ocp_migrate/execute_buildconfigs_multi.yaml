@@ -1,0 +1,8 @@
+lot:
+    size: <int | tamaño de cada lote>
+    wait_time_seconds: <float | tiempo de espera en segundos entre lotes>
+servers:
+    name: <str | nombre del server>
+    namespace: <str | nombre del namespace>
+jaime: 
+    url: <str | url del backend de jaime>

@@ -1,0 +1,9 @@
+servers:
+  from:
+    name: <string | server name>
+    namespace: <string | namespace>
+  to:
+    name: <string | server name>
+    namespace: <string | namespace>
+pvc:
+    storage_class: <string | storage class de validacaion>

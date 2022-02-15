@@ -1,0 +1,5 @@
+servers:
+  from:
+    name: <str | nombre del server>
+    namespace: <str | nombre del namespace>
+    object: <str | tipo de objeto [svc, pod, bc, dc, secret, etc]>
