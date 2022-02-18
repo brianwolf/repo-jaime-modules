@@ -3,6 +3,6 @@ lot:
     wait_time_seconds: <float | tiempo de espera en segundos entre lotes>
 servers:
     name: <str | nombre del server>
-    namespace: <str | nombre del namespace>
+    namespaces: <List[str] | lista de namespaces>
 jaime: 
     url: <str | url del backend de jaime>

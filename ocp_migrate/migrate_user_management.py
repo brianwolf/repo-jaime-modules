@@ -4,10 +4,19 @@ import tools
 params = tools.get_params()
 
 server_from = params['servers']['from']['name']
+namespaces = params['servers']['from']['namespaces']
 
 server_to = params['servers']['to']['name']
 
 jaime_url = params['jaime']['url']
+
+user_managment = [
+    'sa',
+    'roles',
+    'rolebindings',
+    'users',
+    'groups'
+]
 
 
 def post_work(yaml_params: str):
@@ -18,32 +27,36 @@ def post_work(yaml_params: str):
     )
 
 
-def generate_yaml_params(server_from, server_to, ob) -> str:
+def generate_yaml_params(server_from, server_to, np, ob) -> str:
     return f"""
-name: migrate-{ob}
-module: _migrate_object
+name: migrate-{np}-{ob}
+module: 
+    name: migrate_object
+    repo: ocp_migrate
 agent:
     type: OPENSHIFT
 servers:
     from:
         name: {server_from}
-        namespace: openshift
+        namespace: {np}
         object: {ob}        
         ignore: 
             - "system:*"
+            - "default"
+            - "builder"
+            - "deployer"
     to:
         name: {server_to}
-        namespace: openshift
+        namespace: {np}
 """
 
 
-# CLUSTERROLES
-print(f"{server_to} -> Generando work para clusterroles")
-post_work(generate_yaml_params(server_from, server_to, 'clusterroles'))
+for np in namespaces:
 
-# CLUSTERROLEBINDINGS
-print(f"{server_to} -> Generando work para clusterrolebindings")
-post_work(generate_yaml_params(server_from, server_to, 'clusterrolebindings'))
+    for ob in user_managment:
+
+        print(f"{server_to} -> Generando work para {np} {ob}")
+        post_work(generate_yaml_params(server_from, server_to, np, ob))
 
 
 print(f"{server_to} -> Proceso terminado")

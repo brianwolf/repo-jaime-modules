@@ -1,0 +1,17 @@
+servers:
+  from:
+    name: <str | nombre del server origen>
+    namespaces: <List[str] | namespaces a migrar>
+  to:
+    name: <str | nombre del server destino>
+jaime:
+  url: <str | url de jaime>
+
+
+#####################################
+
+# Migra los networking de los namespaces que se envian por parametro
+
+# La lista de objetos es la siguiente:
+#   services
+#   routes

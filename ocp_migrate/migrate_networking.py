@@ -10,6 +10,11 @@ server_to = params['servers']['to']['name']
 
 jaime_url = params['jaime']['url']
 
+networking = [
+    'services',
+    'routes'
+]
+
 
 def post_work(yaml_params: str):
     requests.post(
@@ -22,7 +27,9 @@ def post_work(yaml_params: str):
 def generate_yaml_params(server_from, server_to, np, ob) -> str:
     return f"""
 name: migrate-{np}-{ob}
-module: _migrate_object
+module: 
+    name: migrate_object
+    repo: ocp_migrate
 agent:
     type: OPENSHIFT
 servers:
@@ -38,7 +45,7 @@ servers:
 
 for np in namespaces:
 
-    for ob in ['secrets', 'configmaps', 'buildconfigs']:
+    for ob in networking:
 
         print(f"{server_to} -> Generando work para {np} {ob}")
         post_work(generate_yaml_params(server_from, server_to, np, ob))

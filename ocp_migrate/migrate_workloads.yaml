@@ -1,0 +1,24 @@
+servers:
+  from:
+    name: <str | nombre del server origen>
+    namespaces: <List[str] | namespaces a migrar>
+  to:
+    name: <str | nombre del server destino>
+jaime:
+  url: <str | url de jaime>
+
+
+#####################################
+
+# Migra los workloads de los namespaces que se envian por parametro
+
+# La lista de objetos es la siguiente:
+#   deployments
+#   deploymentconfigs
+#   statefulsets
+#   secrets
+#   configmaps
+#   cronjobs
+#   jobs
+#   DaemonSets
+#   HorizontalPodAutoscaler

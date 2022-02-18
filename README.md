@@ -1,28 +1,8 @@
-# :card_index_dividers: project-jaime
+# :card_index_dividers: repo-jaime-modules
 
-> Herramienta para migrar jenkins de un cluster de openshift a otro
-
-- Jaimeeehhhh...!!!
-- ¿Si, señora?
-- El OCS necesita CI/CD y no hay Jenkins
-- Por eso siempre traigo scripts
+> Modulos para jaime
 
 ![alt](img/logo-negro.png)
-
-## :gear: Requisitos
-
-- python 3.9
-- virtualenv
-
-## :tada: Uso
-
-```bash
-# Levantar el ambiente
-make i
-
-# Ejecutar
-python app.py
-```
 
 ## :books: Referencias
 

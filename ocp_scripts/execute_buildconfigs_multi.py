@@ -23,7 +23,9 @@ def post_work(yaml_params: str):
 def generate_yaml_params(server_to, np) -> str:
     return f"""
 name: execute_buildconfigs-{np}
-module: _execute_buildconfigs
+module: 
+    name: migrate_object
+    repo: ocp_migrate
 agent:
     type: OPENSHIFT
 lot:

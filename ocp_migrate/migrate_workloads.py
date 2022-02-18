@@ -10,6 +10,18 @@ server_to = params['servers']['to']['name']
 
 jaime_url = params['jaime']['url']
 
+workloads = [
+    'deployments',
+    'deploymentconfigs',
+    'statefulsets',
+    'secrets',
+    'configmaps',
+    'cronjobs',
+    'jobs',
+    'DaemonSets',
+    'HorizontalPodAutoscalers'
+]
+
 
 def post_work(yaml_params: str):
     requests.post(
@@ -22,16 +34,20 @@ def post_work(yaml_params: str):
 def generate_yaml_params(server_from, server_to, np, ob) -> str:
     return f"""
 name: migrate-{np}-{ob}
-module: _migrate_object
+module: 
+    name: migrate_object
+    repo: ocp_migrate
 agent:
     type: OPENSHIFT
 servers:
     from:
         name: {server_from}
         namespace: {np}
-        object: {ob}        
+        object: {ob}
         ignore: 
-            - "system:*"
+            - "default-*"
+            - "deployer-*"
+            - "builder-*"
     to:
         name: {server_to}
         namespace: {np}
@@ -40,17 +56,10 @@ servers:
 
 for np in namespaces:
 
-    # SERVICEACCOUNTS
-    print(f"{server_to} -> Generando work para {np} sa")
-    post_work(generate_yaml_params(server_from, server_to, np, 'sa'))
+    for ob in workloads:
 
-    # ROLES
-    print(f"{server_to} -> Generando work para {np} roles")
-    post_work(generate_yaml_params(server_from, server_to, np, 'roles'))
-
-    # ROLEBINDINGS
-    print(f"{server_to} -> Generando work para {np} rolebindings")
-    post_work(generate_yaml_params(server_from, server_to, np, 'rolebindings'))
+        print(f"{server_to} -> Generando work para {np} {ob}")
+        post_work(generate_yaml_params(server_from, server_to, np, ob))
 
 
 print(f"{server_to} -> Proceso terminado")
