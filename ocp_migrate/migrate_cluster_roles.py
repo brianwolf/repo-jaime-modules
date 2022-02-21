@@ -35,6 +35,8 @@ clusters:
             - "system:*"
             - "openshift-*"
             - "registry-*"
+            - "admin"
+            - "cluster-admin"
     to:
         name: {cluster_to}
         namespace: openshift
