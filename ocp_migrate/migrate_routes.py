@@ -14,11 +14,11 @@ cluster_from = params['clusters']['from']['name']
 namespace_from = params['clusters']['from']['namespace']
 only_from = params['clusters']['from'].get('only', [])
 ignore_from = params['clusters']['from'].get('ignore', [])
-host_replace_from = params['clusters']['from']['replace']
+host_replace_from = params['clusters']['from']['host_replace_from']
 
 cluster_to = params['clusters']['to']['name']
 namespace_to = params['clusters']['to']['namespace']
-host_replace_to = params['clusters']['to']['replace']
+host_replace_to = params['clusters']['to']['host_replace_to']
 
 
 ###########################################
