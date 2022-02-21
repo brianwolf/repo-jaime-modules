@@ -1,5 +1,5 @@
-server:
-  name: <str | nombre del server>
+cluster:
+  name: <str | nombre del cluster>
   namespace: <str | nombre del namespace>
 jenkins:
   image:

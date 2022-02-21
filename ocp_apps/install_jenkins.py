@@ -3,8 +3,8 @@ import tools
 
 params = tools.get_params()
 
-server = params['server']['name']
-namespace = params['server']['namespace']
+cluster = params['cluster']['name']
+namespace = params['cluster']['namespace']
 
 image_url = params['jenkins']['image']['url']
 image_tag = params['jenkins']['image']['tag']
@@ -18,10 +18,10 @@ conf_ram = params['jenkins']['config']['memoryRAM']
 conf_vol = params['jenkins']['config']['memoryVolume']
 conf_storage_class = params['jenkins']['config']['storageClass']
 
-oc = tools.get_client(server)
+oc = tools.get_client(cluster)
 login_success = oc.login()
 if not login_success:
-    print(f'Error en login {server}')
+    print(f'Error en login {cluster}')
     exit(0)
 
 

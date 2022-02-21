@@ -3,10 +3,10 @@ import tools
 
 params = tools.get_params()
 
-server_from = params['servers']['from']['name']
-namespaces = params['servers']['from']['namespaces']
+cluster_from = params['clusters']['from']['name']
+namespaces = params['clusters']['from']['namespaces']
 
-server_to = params['servers']['to']['name']
+cluster_to = params['clusters']['to']['name']
 
 jaime_url = params['jaime']['url']
 
@@ -24,7 +24,7 @@ def post_work(yaml_params: str):
     )
 
 
-def generate_yaml_params(server_from, server_to, np, ob) -> str:
+def generate_yaml_params(cluster_from, cluster_to, np, ob) -> str:
     return f"""
 name: migrate-{np}-{ob}
 module: 
@@ -32,13 +32,13 @@ module:
     repo: ocp_migrate
 agent:
     type: OPENSHIFT
-servers:
+clusters:
     from:
-        name: {server_from}
+        name: {cluster_from}
         namespace: {np}
         object: {ob}
     to:
-        name: {server_to}
+        name: {cluster_to}
         namespace: {np}
 """
 
@@ -47,8 +47,8 @@ for np in namespaces:
 
     for ob in networking:
 
-        print(f"{server_to} -> Generando work para {np} {ob}")
-        post_work(generate_yaml_params(server_from, server_to, np, ob))
+        print(f"{cluster_to} -> Generando work para {np} {ob}")
+        post_work(generate_yaml_params(cluster_from, cluster_to, np, ob))
 
 
-print(f"{server_to} -> Proceso terminado")
+print(f"{cluster_to} -> Proceso terminado")

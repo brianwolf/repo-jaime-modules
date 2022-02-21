@@ -1,8 +1,8 @@
 lot:
     size: <int | tamaño de cada lote>
     wait_time_seconds: <float | tiempo de espera en segundos entre lotes>
-servers:
-    name: <str | nombre del server>
+clusters:
+    name: <str | nombre del cluster>
     namespaces: <List[str] | lista de namespaces>
 jaime: 
     url: <str | url del backend de jaime>

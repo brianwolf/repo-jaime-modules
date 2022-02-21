@@ -11,16 +11,16 @@ import tools
 
 params = tools.get_params()
 
-server_from = params['servers']['from']['name']
-namespace_from = params['servers']['from']['namespace']
-object_from = params['servers']['from']['object']
-only_from = params['servers']['from'].get('only', [])
-ignore_from = params['servers']['from'].get('ignore', [])
+cluster_from = params['clusters']['from']['name']
+namespace_from = params['clusters']['from']['namespace']
+object_from = params['clusters']['from']['object']
+only_from = params['clusters']['from'].get('only', [])
+ignore_from = params['clusters']['from'].get('ignore', [])
 
-server_to = params['servers']['to']['name']
-namespace_to = params['servers']['to']['namespace']
-method_to = params['servers']['to'].get('method', 'apply')
-force = params['servers']['to'].get('force', 'false')
+cluster_to = params['clusters']['to']['name']
+namespace_to = params['clusters']['to']['namespace']
+method_to = params['clusters']['to'].get('method', 'apply')
+force = params['clusters']['to'].get('force', 'false')
 
 
 ###########################################
@@ -28,7 +28,7 @@ force = params['servers']['to'].get('force', 'false')
 ###########################################
 
 # file BK
-bk_file_path = f'/data/migrate_{object_from}_{server_from}_{namespace_from}_to_{server_to}_{namespace_to}.txt'
+bk_file_path = f'/data/migrate_{object_from}_{cluster_from}_{namespace_from}_to_{cluster_to}_{namespace_to}.txt'
 
 if str(force).lower() == 'true' or not os.path.exists(bk_file_path):
     tools.sh(f'> {bk_file_path}')
@@ -37,16 +37,16 @@ with open(bk_file_path, 'r') as f:
     migrated_bk = f.read().split('\n')
 
 
-# login server from
-oc_from = tools.get_client(server_from)
+# login cluster from
+oc_from = tools.get_client(cluster_from)
 login_success = oc_from.login()
 if not login_success:
-    print(f'Error en login {server_from}')
+    print(f'Error en login {cluster_from}')
     exit(0)
 
 
 # obteniendo yamls
-print(f"{server_from} -> Obtieniendo todos los objetos")
+print(f"{cluster_from} -> Obtieniendo todos los objetos")
 objects = [
     ob
     for ob
@@ -73,18 +73,18 @@ for ob in objects:
     if ob in migrated_bk:
         continue
 
-    print(f'{server_from} -> Obteniendo {ob}')
+    print(f'{cluster_from} -> Obteniendo {ob}')
     oc_from.exec(f'get {object_from} {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
     objects_to_migrate.append(ob)
 
-print(f'{server_from} -> por migrar {len(objects_to_migrate)} {object_from}')
+print(f'{cluster_from} -> por migrar {len(objects_to_migrate)} {object_from}')
 
 
-# login server to
-oc_to = tools.get_client(server_to)
+# login cluster to
+oc_to = tools.get_client(cluster_to)
 login_success = oc_to.login()
 if not login_success:
-    print(f'Error en login {server_to}')
+    print(f'Error en login {cluster_to}')
     exit(0)
 
 
@@ -110,20 +110,20 @@ for ob in objects_to_migrate:
             f.write(yaml_to_apply)
 
         oc_to.exec(f'{method_to} -n {namespace_to} -f yamls/{ob}.yaml')
-        print(f'{server_to} -> Migrado {ob}')
+        print(f'{cluster_to} -> Migrado {ob}')
         tools.sh(f"""echo "{ob}" >> {bk_file_path}""")
 
     except Exception as e:
         yamls_errors.append(ob)
-        print(f'{server_to} -> ERROR al migrar {ob}')
+        print(f'{cluster_to} -> ERROR al migrar {ob}')
         print(e.with_traceback())
 
 if yamls_errors:
-    logging.error(f'{server_to} -> Yamls con errores al migrar:')
+    logging.error(f'{cluster_to} -> Yamls con errores al migrar:')
     for y_error in yamls_errors:
         logging.error(
-            f'{server_to} -> {y_error}')
+            f'{cluster_to} -> {y_error}')
 
 
-print(f'{server_to} -> proceso terminado')
+print(f'{cluster_to} -> proceso terminado')
 tools.sh(f'rm -fr {bk_file_path}')

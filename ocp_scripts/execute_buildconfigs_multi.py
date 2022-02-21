@@ -6,8 +6,8 @@ params = tools.get_params()
 size = params['lot']['size']
 wait_time_seconds = params['lot']['wait_time_seconds']
 
-server_to = params['servers']['name']
-namespaces = params['servers']['namespaces']
+cluster_to = params['clusters']['name']
+namespaces = params['clusters']['namespaces']
 
 jaime_url = params['jaime']['url']
 
@@ -20,7 +20,7 @@ def post_work(yaml_params: str):
     )
 
 
-def generate_yaml_params(server_to, np) -> str:
+def generate_yaml_params(cluster_to, np) -> str:
     return f"""
 name: execute_buildconfigs-{np}
 module: 
@@ -31,16 +31,16 @@ agent:
 lot:
     size: {size}
     wait_time_seconds: {wait_time_seconds}
-servers:
-    name: {server_to}
+clusters:
+    name: {cluster_to}
     namespace: {np}
 """
 
 
 for np in namespaces:
 
-    print(f"{server_to} -> Generando work para {np}")
-    post_work(generate_yaml_params(server_to, np))
+    print(f"{cluster_to} -> Generando work para {np}")
+    post_work(generate_yaml_params(cluster_to, np))
 
 
-print(f"{server_to} -> Proceso terminado")
+print(f"{cluster_to} -> Proceso terminado")

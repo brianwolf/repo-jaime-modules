@@ -1,8 +1,8 @@
-servers:
+clusters:
   from:
-    name: <str | nombre del server origen>
+    name: <str | nombre del cluster origen>
     namespaces: <List[str] | namespaces a migrar>
   to:
-    name: <str | nombre del server destino>
+    name: <str | nombre del cluster destino>
 jaime:
   url: <str | url de jaime>

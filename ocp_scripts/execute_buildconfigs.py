@@ -13,11 +13,11 @@ params = tools.get_params()
 size = params['lot']['size']
 wait_time_seconds = params['lot']['wait_time_seconds']
 
-server = params['servers']['name']
-namespace = params['servers']['namespace']
-only = params['servers'].get('only', [])
-ignore = params['servers'].get('ignore', [])
-force = params['servers'].get('force', 'false')
+cluster = params['clusters']['name']
+namespace = params['clusters']['namespace']
+only = params['clusters'].get('only', [])
+ignore = params['clusters'].get('ignore', [])
+force = params['clusters'].get('force', 'false')
 
 
 ###########################################
@@ -25,7 +25,7 @@ force = params['servers'].get('force', 'false')
 ###########################################
 
 # file BK
-bk_file_path = f'/data/execute_bc_{server}_{namespace}.txt'
+bk_file_path = f'/data/execute_bc_{cluster}_{namespace}.txt'
 
 if str(force).lower() == 'true' or not os.path.exists(bk_file_path):
     tools.sh(f'> {bk_file_path}')
@@ -35,16 +35,16 @@ with open(bk_file_path, 'r') as f:
 
 
 # login 
-oc = tools.get_client(server)
+oc = tools.get_client(cluster)
 
 login_success = oc.login()
 if not login_success:
-    print(f'Error en login {server}')
+    print(f'Error en login {cluster}')
     exit(0)
 
 
 # obteniendo BCs
-print(f"{server} -> Obtieniendo todos los buildconfigs")
+print(f"{cluster} -> Obtieniendo todos los buildconfigs")
 
 bc_list = [
     bc
@@ -72,18 +72,18 @@ for bc in bc_list:
 
     bc_list_to_execute.append(bc)
 
-print(f"{server} -> bc para ejecutar: {len(bc_list_to_execute)}")
+print(f"{cluster} -> bc para ejecutar: {len(bc_list_to_execute)}")
 
 
 # ejecucion
-print(f"{server} -> Comenzando ejecucion")
+print(f"{cluster} -> Comenzando ejecucion")
 
 lot_exec_count = 0
 for bc in bc_list_to_execute:
 
     lot_exec_count += 1
 
-    print(f"{server} -> Ejecutando bc: {bc}")
+    print(f"{cluster} -> Ejecutando bc: {bc}")
     oc.exec(f'start-build {bc} -n {namespace}')
     tools.sh(f"""echo "{bc}" >> {bk_file_path}""")
 
@@ -92,5 +92,5 @@ for bc in bc_list_to_execute:
         time.sleep(float(wait_time_seconds))
 
 
-print(f"{server} -> Proceso terminado")
+print(f"{cluster} -> Proceso terminado")
 tools.sh(f'rm -fr {bk_file_path}')

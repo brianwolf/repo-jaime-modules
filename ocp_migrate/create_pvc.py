@@ -6,11 +6,11 @@ import yaml
 
 params = tools.get_params()
 
-server_from = params['servers']['from']['name']
-namespace_from = params['servers']['from']['namespace']
+cluster_from = params['clusters']['from']['name']
+namespace_from = params['clusters']['from']['namespace']
 
-server_to = params['servers']['to']['name']
-namespace_to = params['servers']['to']['namespace']
+cluster_to = params['clusters']['to']['name']
+namespace_to = params['clusters']['to']['namespace']
 
 pvc_storage_class = params['pvc']['storage_class']
 
@@ -19,14 +19,14 @@ pvc_storage_class = params['pvc']['storage_class']
 # ------------------------
 
 # GET
-oc_from = tools.get_client(server_from)
+oc_from = tools.get_client(cluster_from)
 login_success = oc_from.login()
 if not login_success:
-    print(f'Error en login {server_from}')
+    print(f'Error en login {cluster_from}')
     exit(0)
 
 
-print(f"{server_from} -> Obtieniendo todos los pvs")
+print(f"{cluster_from} -> Obtieniendo todos los pvs")
 pvc_to_migrate = [
     ob
     for ob
@@ -41,13 +41,13 @@ for ob in pvc_to_migrate:
     if not pvc_storage_class in content:
         continue
 
-    print(f'{server_from} -> Obteniendo {ob}')
+    print(f'{cluster_from} -> Obteniendo {ob}')
 
     with open(f'yamls/{ob}.yaml', 'w') as f:
         f.write(content)
 
 # POST
-oc_to = tools.get_oc(server_to)
+oc_to = tools.get_oc(cluster_to)
 oc_to.login()
 
 oc_to.exec(f'new-project {namespace_to}')
@@ -55,7 +55,7 @@ oc_to.exec(f'new-project {namespace_to}')
 yamls_to_migrate = []
 for _, _, file_name in os.walk('yamls/'):
     yamls_to_migrate.extend(file_name)
-print(f'{server_to} -> Por migrar {len(yamls_to_migrate)} pvs')
+print(f'{cluster_to} -> Por migrar {len(yamls_to_migrate)} pvs')
 
 for yaml_to_migrate in yamls_to_migrate:
     try:
@@ -81,7 +81,7 @@ for yaml_to_migrate in yamls_to_migrate:
             f.write(yaml_to_apply)
 
         oc_to.exec(f'apply -n {namespace_to} -f yamls/{yaml_to_migrate}')
-        print(f'{server_to} -> Migrado {yaml_to_migrate}')
+        print(f'{cluster_to} -> Migrado {yaml_to_migrate}')
 
     except Exception as e:
         logging.exception(e)
@@ -91,10 +91,10 @@ for yaml_to_migrate in yamls_to_migrate:
 # ------------------------
 
 # GET
-oc_from = tools.get_oc(server_from)
+oc_from = tools.get_oc(cluster_from)
 oc_from.login()
 
-print(f"{server_from} -> Obtieniendo todos los pvcs")
+print(f"{cluster_from} -> Obtieniendo todos los pvcs")
 pvc_to_migrate = [
     ob
     for ob
@@ -109,19 +109,19 @@ for ob in pvc_to_migrate:
     if not pvc_storage_class in content:
         continue
 
-    print(f'{server_from} -> Obteniendo {ob}')
+    print(f'{cluster_from} -> Obteniendo {ob}')
 
     with open(f'yamls/{ob}.yaml', 'w') as f:
         f.write(content)
 
 # POST
-oc_to = tools.get_oc(server_to)
+oc_to = tools.get_oc(cluster_to)
 oc_to.login()
 
 yamls_to_migrate = []
 for _, _, file_name in os.walk('yamls/'):
     yamls_to_migrate.extend(file_name)
-print(f'{server_to} -> Por migrar {len(yamls_to_migrate)} pvcs')
+print(f'{cluster_to} -> Por migrar {len(yamls_to_migrate)} pvcs')
 
 for yaml_to_migrate in yamls_to_migrate:
     try:
@@ -141,7 +141,7 @@ for yaml_to_migrate in yamls_to_migrate:
             f.write(yaml_to_apply)
 
         oc_to.exec(f'apply -n {namespace_to} -f yamls/{yaml_to_migrate}')
-        print(f'{server_to} -> Migrado {yaml_to_migrate}')
+        print(f'{cluster_to} -> Migrado {yaml_to_migrate}')
 
     except Exception as e:
         logging.exception(e)

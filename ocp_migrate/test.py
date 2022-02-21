@@ -3,19 +3,19 @@ import re
 
 params = tools.get_params()
 
-server_from = params['servers']['from']['name']
-namespace_from = params['servers']['from']['namespace']
-object_from = params['servers']['from']['object']
-only_from = params['servers']['from'].get('only', [])
-ignore_from = params['servers']['from'].get('ignore', [])
+cluster_from = params['clusters']['from']['name']
+namespace_from = params['clusters']['from']['namespace']
+object_from = params['clusters']['from']['object']
+only_from = params['clusters']['from'].get('only', [])
+ignore_from = params['clusters']['from'].get('ignore', [])
 
-oc_from = tools.get_client(server_from)
+oc_from = tools.get_client(cluster_from)
 login_success = oc_from.login()
 if not login_success:
-    print(f'Error en login {server_from}')
+    print(f'Error en login {cluster_from}')
     exit(0)
 
-print(f"{server_from} -> Obtieniendo todos los objetos")
+print(f"{cluster_from} -> Obtieniendo todos los objetos")
 objects = [
     ob
     for ob
@@ -40,9 +40,9 @@ for ob in objects:
 
     objects_to_migrate.append(ob)
 
-print(f"{server_from} -> Objetos entontrados: {len(objects_to_migrate)}")
+print(f"{cluster_from} -> Objetos entontrados: {len(objects_to_migrate)}")
 
 for ob in objects_to_migrate:
     print(ob)
 
-print(f"{server_from} -> Proceso terminado OK")
+print(f"{cluster_from} -> Proceso terminado OK")
