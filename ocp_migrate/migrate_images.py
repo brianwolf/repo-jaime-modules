@@ -88,7 +88,7 @@ print(f'{cluster_to} -> Creado secret -> {secret}')
 
 
 # file BK
-bk_file_path = f'/data/migrate_registry_{cluster_from}_{namespace}_to_{cluster_to}_{namespace}.txt'
+bk_file_path = f'/data/migrate_images_{cluster_from}_{namespace}_to_{cluster_to}_{namespace}.txt'
 
 if not os.path.exists(bk_file_path):
     tools.sh(f'> {bk_file_path}')
