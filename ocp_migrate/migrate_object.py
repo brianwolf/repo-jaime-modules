@@ -42,7 +42,7 @@ oc_from = tools.get_client(cluster_from)
 login_success = oc_from.login()
 if not login_success:
     print(f'Error en login {cluster_from}')
-    exit(0)
+    exit(1)
 
 
 # obteniendo yamls
@@ -85,7 +85,7 @@ oc_to = tools.get_client(cluster_to)
 login_success = oc_to.login()
 if not login_success:
     print(f'Error en login {cluster_to}')
-    exit(0)
+    exit(1)
 
 
 # migrar yamls
