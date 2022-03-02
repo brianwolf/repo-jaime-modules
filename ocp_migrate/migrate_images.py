@@ -42,8 +42,8 @@ for s in secrets:
     p = re.compile('default-dockercfg-*')
     m = p.match(s)
     if m:
-        secret = m.group()
-        print('Encontrado secret -> ', secret)
+        secret = s
+        print('Encontrado secret -> ', s)
 
 if not secret:
     print(f'Error en encontrar un secret con la forma -> default-dockercfg-*')
@@ -76,7 +76,6 @@ dic_yaml['metadata'].pop('selfLink', None)
 dic_yaml['metadata'].pop('uid', None)
 dic_yaml.pop('status', None)
 
-dic_yaml['metadata']['name'] = f'migration-{cluster_from}'
 dic_yaml['metadata'].pop('ownerReferences', None)
 
 yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
@@ -104,9 +103,11 @@ for image in images:
         continue
 
     oc_to.exec(
-        f"oc import-image {image} --from={url_public_registry}/{namespace}/{image} --confirm --insecure=true -n {namespace}")
+        f"import-image {image} --from={url_public_registry}/{namespace}/{image} --confirm --insecure=true -n {namespace}")
     tools.sh(f"""echo "{image}" >> {bk_file_path}""")
 
+
+oc_to.exec(f"delete secret {secret} -n {namespace}")
 
 print(f'{cluster_to} -> proceso terminado')
 tools.sh(f'rm -fr {bk_file_path}')
