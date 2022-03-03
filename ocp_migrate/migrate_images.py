@@ -103,7 +103,7 @@ for image in images:
         continue
 
     oc_to.exec(
-        f"import-image {image} --from={url_public_registry}/{namespace}/{image} --confirm --insecure=true -n {namespace}")
+        f"import-image {image} --from={url_public_registry}/{namespace}/{image} --all --confirm --insecure=true -n {namespace}")
     tools.sh(f"""echo "{image}" >> {bk_file_path}""")
 
 
