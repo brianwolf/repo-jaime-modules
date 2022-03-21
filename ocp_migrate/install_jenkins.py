@@ -1,4 +1,3 @@
-import yaml
 import tools
 
 params = tools.get_params()
@@ -18,15 +17,14 @@ conf_ram = params['jenkins']['config']['memoryRAM']
 conf_vol = params['jenkins']['config']['memoryVolume']
 conf_storage_class = params['jenkins']['config']['storageClass']
 
-oc = tools.get_client(cluster)
-login_success = oc.login()
+login_success = tools.login_openshift(cluster)
 if not login_success:
     print(f'Error en login {cluster}')
     exit(0)
 
 
 print(f'Creando {namespace}')
-oc.exec(f'new-project {namespace}')
+tools.sh(f'oc new-project {namespace}')
 print(f'\n\n')
 
 
@@ -50,7 +48,7 @@ spec:
 """
 with open('pvc.yaml', 'w') as f:
     f.write(pvc_yaml)
-oc.exec(f'apply -f pvc.yaml')
+tools.sh(f'oc apply -f pvc.yaml')
 print(f'\n\n')
 
 
@@ -88,7 +86,7 @@ roleRef:
 """
 with open('crb.yaml', 'w') as f:
     f.write(crb_yaml)
-oc.exec(f'apply -f crb.yaml')
+tools.sh(f'oc apply -f crb.yaml')
 print(f'\n\n')
 
 

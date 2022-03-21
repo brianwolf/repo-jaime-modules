@@ -37,11 +37,10 @@ row_items = [
 
 
 def get_count(object: str, project: str) -> int:
-    return len(oc_from.exec(f'get {object} -n {project} -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:])
+    return len(tools.sh(f'oc get {object} -n {project} -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:])
 
 
-oc_from = tools.get_client(cluster_from)
-login_success = oc_from.login()
+login_success = tools.login_openshift(cluster_from)
 if not login_success:
     print(f'Error en login {cluster_from}')
     exit(1)
@@ -49,7 +48,7 @@ if not login_success:
 
 projects = [
     project
-    for project in oc_from.exec(f'get projects -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
+    for project in tools.sh(f'oc get projects -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
     if 'openshift-' not in project
 ]
 

@@ -38,8 +38,7 @@ with open(bk_file_path, 'r') as f:
 
 
 # login cluster from
-oc_from = tools.get_client(cluster_from)
-login_success = oc_from.login()
+login_success = tools.login_openshift(cluster_from)
 if not login_success:
     print(f'Error en login {cluster_from}')
     exit(1)
@@ -50,7 +49,7 @@ print(f"{cluster_from} -> Obtieniendo todos los objetos")
 objects = [
     ob
     for ob
-    in oc_from.exec(f'get {object_from} -n {namespace_from} -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
+    in tools.sh(f'oc get {object_from} -n {namespace_from} -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
 ]
 
 tools.sh('mkdir yamls/')
@@ -74,22 +73,21 @@ for ob in objects:
         continue
 
     print(f'{cluster_from} -> Obteniendo {ob}')
-    oc_from.exec(f'get {object_from} {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
+    tools.sh(f'oc get {object_from} {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
     objects_to_migrate.append(ob)
 
 print(f'{cluster_from} -> por migrar {len(objects_to_migrate)} {object_from}')
 
 
 # login cluster to
-oc_to = tools.get_client(cluster_to)
-login_success = oc_to.login()
+login_success = tools.login_openshift(cluster_to)
 if not login_success:
     print(f'Error en login {cluster_to}')
     exit(1)
 
 
 # migrar yamls
-oc_to.exec(f'new-project {namespace_to}')
+tools.sh(f'oc new-project {namespace_to}')
 
 yamls_errors = []
 for ob in objects_to_migrate:
@@ -109,7 +107,7 @@ for ob in objects_to_migrate:
         with open(f'yamls/{ob}.yaml', 'w') as f:
             f.write(yaml_to_apply)
 
-        oc_to.exec(f'{method_to} -n {namespace_to} -f yamls/{ob}.yaml')
+        tools.sh(f'oc {method_to} -n {namespace_to} -f yamls/{ob}.yaml')
         print(f'{cluster_to} -> Migrado {ob}')
         tools.sh(f"""echo "{ob}" >> {bk_file_path}""")
 

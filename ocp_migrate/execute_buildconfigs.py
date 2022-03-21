@@ -35,9 +35,7 @@ with open(bk_file_path, 'r') as f:
 
 
 # login 
-oc = tools.get_client(cluster)
-
-login_success = oc.login()
+login_success = tools.login_openshift(cluster)
 if not login_success:
     print(f'Error en login {cluster}')
     exit(0)
@@ -49,7 +47,7 @@ print(f"{cluster} -> Obtieniendo todos los buildconfigs")
 bc_list = [
     bc
     for bc
-    in oc.exec(f'get bc -n {namespace} -o custom-columns=NAME:.metadata.name').split('\n')[1:]
+    in tools.sh(f'oc get bc -n {namespace} -o custom-columns=NAME:.metadata.name').split('\n')[1:]
 ]
 
 bc_list_to_execute = []
@@ -84,7 +82,7 @@ for bc in bc_list_to_execute:
     lot_exec_count += 1
 
     print(f"{cluster} -> Ejecutando bc: {bc}")
-    oc.exec(f'start-build {bc} -n {namespace}')
+    tools.sh(f'oc start-build {bc} -n {namespace}')
     tools.sh(f"""echo "{bc}" >> {bk_file_path}""")
 
     if lot_exec_count == size:

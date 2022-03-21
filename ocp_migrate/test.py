@@ -9,8 +9,7 @@ object_from = params['clusters']['from']['object']
 only_from = params['clusters']['from'].get('only', [])
 ignore_from = params['clusters']['from'].get('ignore', [])
 
-oc_from = tools.get_client(cluster_from)
-login_success = oc_from.login()
+login_success = tools.login_openshift(cluster_from)
 if not login_success:
     print(f'Error en login {cluster_from}')
     exit(0)
@@ -19,7 +18,7 @@ print(f"{cluster_from} -> Obtieniendo todos los objetos")
 objects = [
     ob
     for ob
-    in oc_from.exec(f'get {object_from} -n {namespace_from} -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
+    in tools.sh(f'oc get {object_from} -n {namespace_from} -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
 ]
 
 

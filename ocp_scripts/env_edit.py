@@ -11,9 +11,7 @@ envs_to_edit = params['env'].get('edit', {})
 envs_to_add = params['env'].get('add', {})
 
 
-oc = tools.get_client(cluster)
-
-if not oc.login():
+if not tools.login_openshift(cluster):
     print(f'Error en login {cluster}')
     exit(1)
 
@@ -23,7 +21,7 @@ tools.sh('mkdir yamls')
 if not namespaces_list:
     namespaces_list = [
         np
-        for np in oc.exec(f'get project -o custom-columns=NAME:.metadata.name').split('\n')[1:]
+        for np in tools.sh(f'oc get project -o custom-columns=NAME:.metadata.name').split('\n')[1:]
         if not 'openshift-' in np
     ]
 
@@ -31,12 +29,12 @@ for np in namespaces_list:
 
     dc_list = [
         np
-        for np in oc.exec(f'get {object} -n {np} -o custom-columns=NAME:.metadata.name').split('\n')[1:]
+        for np in tools.sh(f'oc get {object} -n {np} -o custom-columns=NAME:.metadata.name').split('\n')[1:]
     ]
 
     for dc in dc_list:
 
-        str_yaml = oc.exec(f'get {object} {dc} -n {np} -o yaml', echo=False)
+        str_yaml = tools.sh(f'oc get {object} {dc} -n {np} -o yaml', echo=False)
         dic_yaml = yaml.load(str_yaml, Loader=yaml.FullLoader)
 
         for container in dic_yaml['spec']['template']['spec']['containers']:
@@ -76,4 +74,4 @@ for np in namespaces_list:
         with open(f'yamls/{dc}.yaml', 'w') as f:
             f.write(yaml_to_apply)
 
-        oc.exec(f'apply -n {np} -f yamls/{dc}.yaml')
+        tools.sh(f'oc apply -n {np} -f yamls/{dc}.yaml')
