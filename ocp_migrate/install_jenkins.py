@@ -53,13 +53,12 @@ print(f'\n\n')
 
 
 print(f'Descargando imagen {image_url}:{image_tag} en {is_namespace}')
-oc.exec(
-    f'import-image openshift4/{is_name}:{is_tag} --from={image_url} --confirm -n {is_namespace}')
+tools.sh(f'oc import-image openshift4/{is_name}:{is_tag} --from={image_url} --confirm -n {is_namespace}')
 print(f'\n\n')
 
 
 print(f'Instalando Jenkins en {namespace}')
-oc.exec(f"""new-app -n {namespace} \
+tools.sh(f"""oc new-app -n {namespace} \
 	--template={conf_template} \
 	--param=NAMESPACE={is_namespace} \
 	--param=MEMORY_LIMIT={conf_ram} \
@@ -91,6 +90,6 @@ print(f'\n\n')
 
 
 print(f'Configurando Jenkins')
-oc.exec(f"""set -n {namespace} env dc jenkins \
+tools.sh(f"""oc set -n {namespace} env dc jenkins \
 JAVA_TOOL_OPTIONS="-Dhttps.protocols=TLSv1.2" \
 JAVA_OPTS="-Dhttps.protocols=TLSv1.2 -Djdk.tls.client.protocols=TLSv1.2" """)
