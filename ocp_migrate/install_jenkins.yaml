@@ -1,14 +1,14 @@
 cluster:
   name: <str | nombre del cluster>
-  namespace: <str | nombre del namespace>
+  namespace: jenkins
 jenkins:
   image:
-    url: <str | url de la imagen de jenkins>
-    tag: <str | tag de la imagen>
+    url: registry.redhat.io/openshift4/ose-jenkins
+    tag: 4.10.0
   imageStream:
-    namespace: <str | namespace del IS donde se guardara la imagen descargada>
-    name: <str | nombre del IS>
-    tag: <str | tag del IS>
+    namespace: jenkins
+    name: ose-jenkins
+    tag: 4.10.0
   config:
     template: jenkins-persistent
     memoryRAM: <str | RAM ejemplo 4Gi>
