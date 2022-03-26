@@ -70,10 +70,10 @@ print(f'\n\n')
 
 print(f'Creando CRB con nombre jenkins-cluster-admin')
 crb_yaml = f"""
-kind: RoleBinding
+kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: jenkins-admin
+  name: jenkins-cluster-admin
 subjects:
   - kind: ServiceAccount
     name: jenkins
