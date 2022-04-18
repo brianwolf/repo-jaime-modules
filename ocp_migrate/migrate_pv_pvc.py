@@ -67,7 +67,7 @@ if not login_success:
 
 # migrar yamls
 yamls_errors = []
-for pv in pvs:
+for pv in pvs_to_migrate:
     try:
         with open(f'yamls/pvs/{pv}.yaml', 'r') as file:
             dic_yaml = yaml.load(file, Loader=yaml.FullLoader)
@@ -160,7 +160,7 @@ for np in namespaces:
 
     # migrar yamls
     yamls_errors = []
-    for pvc in pvcs:
+    for pvc in pvcs_to_migrate:
         try:
             with open(f'yamls/pvcs/{pvc}.yaml', 'r') as file:
                 dic_yaml = yaml.load(file, Loader=yaml.FullLoader)
