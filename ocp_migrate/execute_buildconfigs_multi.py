@@ -12,7 +12,7 @@ jaime_url = params['jaime']['url']
 namespaces = [
     ob
     for ob
-    in tools.sh(f'oc get proyects -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
+    in tools.sh(f'oc get projects -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
     if not 'openshift-' in ob
 ]
 
