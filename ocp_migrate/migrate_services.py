@@ -69,8 +69,8 @@ for ob in objects:
         continue
 
     print(f'{cluster_from} -> Obteniendo {ob}')
-    oc_from.exec(
-        f'get services {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
+    tools.sh(
+        f'oc get services {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
     objects_to_migrate.append(ob)
 
 print(f'{cluster_from} -> por migrar {len(objects_to_migrate)} services')

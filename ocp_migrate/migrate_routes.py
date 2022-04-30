@@ -71,15 +71,15 @@ for ob in objects:
         continue
 
     print(f'{cluster_from} -> Obteniendo {ob}')
-    oc_from.exec(
-        f'get routes {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
+    tools.sh(
+        f'oc get routes {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
     objects_to_migrate.append(ob)
 
 print(f'{cluster_from} -> por migrar {len(objects_to_migrate)} routes')
 
 
 # login cluster to
-login_success =tools.login_openshift(cluster_to)
+login_success = tools.login_openshift(cluster_to)
 if not login_success:
     print(f'Error en login {cluster_to}')
     exit(1)
@@ -102,7 +102,8 @@ for ob in objects_to_migrate:
         dic_yaml['metadata'].pop('uid', None)
         dic_yaml.pop('status', None)
 
-        dic_yaml['spec']['host'] = dic_yaml['spec']['host'].replace(host_replace_from, host_replace_to)
+        dic_yaml['spec']['host'] = dic_yaml['spec']['host'].replace(
+            host_replace_from, host_replace_to)
 
         yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
         with open(f'yamls/{ob}.yaml', 'w') as f:
