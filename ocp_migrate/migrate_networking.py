@@ -34,9 +34,6 @@ for np in namespaces:
         }
     })
 
-
-for np in namespaces:
-
     # SERVICES
     print(f"{cluster_to} -> Generando work para services")
     tools.new_jaime_work(f'migrate-routes-{np}', 'ocp_migrate', 'migrate_services', {
