@@ -1,7 +1,6 @@
 clusters:
   from:
     name: <string | nombre del cluster>
-    namespaces: <List[string] | lista de namespaces>
   to:
     name: <string | nombre del cluster>
     storage_class: <string | storage class a usar>

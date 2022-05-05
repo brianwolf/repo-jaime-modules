@@ -49,8 +49,8 @@ if not secret:
     exit(1)
 
 tools.sh('mkdir -p yamls/secrets')
-oc_from.exec(
-    f'get secret {secret} -n {namespace} -o yaml > yamls/secrets/{secret}.yaml')
+tools.sh(
+    f'oc get secret {secret} -n {namespace} -o yaml > yamls/secrets/{secret}.yaml')
 
 
 # logueando cluster to
@@ -100,12 +100,13 @@ for image in images:
     if image in migrated_bk:
         continue
 
-    oc_to.exec(
-        f"import-image {image} --from={url_public_registry}/{namespace}/{image} --all --confirm --insecure=true -n {namespace}")
+    tools.sh(
+        f"oc import-image {image} --from={url_public_registry}/{namespace}/{image} --all --confirm --insecure=true -n {namespace}")
     tools.sh(f"""echo "{image}" >> {bk_file_path}""")
 
 
-oc_to.exec(f"delete secret {secret} -n {namespace}")
+tools.sh(
+    f"oc delete secret {secret} -n {namespace}")
 
 print(f'{cluster_to} -> proceso terminado')
 tools.sh(f'rm -fr {bk_file_path}')

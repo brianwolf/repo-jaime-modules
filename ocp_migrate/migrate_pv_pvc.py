@@ -7,7 +7,6 @@ import yaml
 params = tools.get_params()
 
 cluster_from = params['clusters']['from']['name']
-namespaces = params['clusters']['from']['namespaces']
 
 cluster_to = params['clusters']['to']['name']
 pvc_storage_class = params['clusters']['to']['storage_class']
@@ -28,8 +27,7 @@ with open(bk_file_path, 'r') as f:
 
 
 # login cluster from
-oc_from = tools.login_openshift(cluster_from)
-login_success = oc_from.login()
+login_success = tools.login_openshift(cluster_from)
 if not login_success:
     print(f'Error en login {cluster_from}')
     exit(1)
@@ -108,6 +106,13 @@ tools.sh(f'rm -fr {bk_file_path}')
 ###########################################
 # PVCs
 ###########################################
+
+namespaces = [
+    ob
+    for ob
+    in tools.sh(f'oc get projects -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
+    if not 'openshift-' in ob
+]
 
 for np in namespaces:
 
