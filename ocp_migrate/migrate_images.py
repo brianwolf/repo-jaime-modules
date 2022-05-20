@@ -63,22 +63,21 @@ if not login_success:
 # generando secret en cluster to
 tools.sh(f'oc new-project {namespace}')
 
-with open(f'yamls/secrets/{secret}.yaml', 'r') as file:
+with open(f'yamls/secrets/{secret}.yaml', 'w') as file:
     dic_yaml = yaml.load(file, Loader=yaml.FullLoader)
 
-dic_yaml['metadata'].pop('managedFields', None)
-dic_yaml['metadata'].pop('creationTimestamp', None)
-dic_yaml['metadata'].pop('namespace', None)
-dic_yaml['metadata'].pop('resourceVersion', None)
-dic_yaml['metadata'].pop('selfLink', None)
-dic_yaml['metadata'].pop('uid', None)
-dic_yaml.pop('status', None)
+    dic_yaml['metadata'].pop('managedFields', None)
+    dic_yaml['metadata'].pop('creationTimestamp', None)
+    dic_yaml['metadata'].pop('namespace', None)
+    dic_yaml['metadata'].pop('resourceVersion', None)
+    dic_yaml['metadata'].pop('selfLink', None)
+    dic_yaml['metadata'].pop('uid', None)
+    dic_yaml.pop('status', None)
 
-dic_yaml['metadata'].pop('ownerReferences', None)
+    dic_yaml['metadata'].pop('ownerReferences', None)
 
-yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
-with open(f'yamls/secrets/{secret}.yaml', 'w') as f:
-    f.write(yaml_to_apply)
+    yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
+    file.write(yaml_to_apply)
 
 tools.sh(f'oc apply -n {namespace} -f yamls/secrets/{secret}.yaml')
 print(f'{cluster_to} -> Creado secret -> {secret}')

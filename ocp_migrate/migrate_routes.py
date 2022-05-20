@@ -11,13 +11,12 @@ import tools
 params = tools.get_params()
 
 cluster_from = params['clusters']['from']['name']
-namespace_from = params['clusters']['from']['namespace']
+namespace = params['clusters']['from']['namespace']
 only_from = params['clusters']['from'].get('only', [])
 ignore_from = params['clusters']['from'].get('ignore', [])
 host_replace_from = params['clusters']['from']['host_replace_from']
 
 cluster_to = params['clusters']['to']['name']
-namespace_to = params['clusters']['to']['namespace']
 host_replace_to = params['clusters']['to']['host_replace_to']
 
 
@@ -26,7 +25,7 @@ host_replace_to = params['clusters']['to']['host_replace_to']
 ###########################################
 
 # file BK
-bk_file_path = f'/data/migrate_routes_{cluster_from}_{namespace_from}_to_{cluster_to}_{namespace_to}.txt'
+bk_file_path = f'/data/migrate_routes_{cluster_from}_{namespace}_to_{cluster_to}_{namespace}.txt'
 
 if not os.path.exists(bk_file_path):
     tools.sh(f'> {bk_file_path}')
@@ -47,7 +46,7 @@ print(f"{cluster_from} -> Obtieniendo todos los objetos")
 objects = [
     ob
     for ob
-    in tools.sh(f'oc get routes -n {namespace_from} -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
+    in tools.sh(f'oc get routes -n {namespace} -o custom-columns=NAME:.metadata.name', echo=False).split('\n')[1:]
 ]
 
 tools.sh('mkdir yamls/')
@@ -72,7 +71,7 @@ for ob in objects:
 
     print(f'{cluster_from} -> Obteniendo {ob}')
     tools.sh(
-        f'oc get routes {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
+        f'oc get routes {ob} -n {namespace} -o yaml > yamls/{ob}.yaml')
     objects_to_migrate.append(ob)
 
 print(f'{cluster_from} -> por migrar {len(objects_to_migrate)} routes')
@@ -86,30 +85,28 @@ if not login_success:
 
 
 # migrar yamls
-tools.sh(f'oc new-project {namespace_to}')
+tools.sh(f'oc new-project {namespace}')
 
 yamls_errors = []
 for ob in objects_to_migrate:
     try:
-        with open(f'yamls/{ob}.yaml', 'r') as file:
+        with open(f'yamls/{ob}.yaml', 'w') as file:
             dic_yaml = yaml.load(file, Loader=yaml.FullLoader)
 
-        dic_yaml['metadata'].pop('managedFields', None)
-        dic_yaml['metadata'].pop('creationTimestamp', None)
-        dic_yaml['metadata'].pop('namespace', None)
-        dic_yaml['metadata'].pop('resourceVersion', None)
-        dic_yaml['metadata'].pop('selfLink', None)
-        dic_yaml['metadata'].pop('uid', None)
-        dic_yaml.pop('status', None)
+            dic_yaml['metadata'].pop('managedFields', None)
+            dic_yaml['metadata'].pop('creationTimestamp', None)
+            dic_yaml['metadata'].pop('namespace', None)
+            dic_yaml['metadata'].pop('resourceVersion', None)
+            dic_yaml['metadata'].pop('selfLink', None)
+            dic_yaml['metadata'].pop('uid', None)
+            dic_yaml.pop('status', None)
 
-        dic_yaml['spec']['host'] = dic_yaml['spec']['host'].replace(
-            host_replace_from, host_replace_to)
+            dic_yaml['spec']['host'] = dic_yaml['spec']['host'].replace(
+                host_replace_from, host_replace_to)
 
-        yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
-        with open(f'yamls/{ob}.yaml', 'w') as f:
-            f.write(yaml_to_apply)
+            f.write(yaml.dump(dic_yaml, default_flow_style=False))
 
-        tools.sh(f'oc apply -n {namespace_to} -f yamls/{ob}.yaml')
+        tools.sh(f'oc apply -n {namespace} -f yamls/{ob}.yaml')
         print(f'{cluster_to} -> Migrado {ob}')
         tools.sh(f"""echo "{ob}" >> {bk_file_path}""")
 

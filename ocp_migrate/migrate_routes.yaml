@@ -7,5 +7,4 @@ clusters:
     host_replace_from: <str | wildcard anterior>
   to:
     name: <str | nombre del cluster>
-    namespace: <str | nombre del namespace>
     host_replace_to: <str | wildcard del nuevo cluster>

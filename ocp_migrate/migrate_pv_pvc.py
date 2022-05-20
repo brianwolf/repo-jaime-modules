@@ -58,6 +58,7 @@ for pvc in pvcs:
     # PV
     with open(f'yamls/pvcs/{pvc}.yaml', 'r') as file:
         dic_yaml = yaml.load(file, Loader=yaml.FullLoader)
+
     pv = dic_yaml['spec']['volumeName']
 
     tools.sh(f'oc get pv {pv} -o yaml > yamls/pvs/{pv}.yaml')
@@ -79,24 +80,22 @@ if not login_success:
 yamls_errors = []
 for pv in pvs_to_migrate:
     try:
-        with open(f'yamls/pvs/{pv}.yaml', 'r') as file:
+        with open(f'yamls/pvs/{pv}.yaml', 'w') as file:
             dic_yaml = yaml.load(file, Loader=yaml.FullLoader)
 
-        dic_yaml['metadata'].pop('managedFields', None)
-        dic_yaml['metadata'].pop('creationTimestamp', None)
-        dic_yaml['metadata'].pop('namespace', None)
-        dic_yaml['metadata'].pop('resourceVersion', None)
-        dic_yaml['metadata'].pop('selfLink', None)
-        dic_yaml['metadata'].pop('uid', None)
-        dic_yaml.pop('status', None)
+            dic_yaml['metadata'].pop('managedFields', None)
+            dic_yaml['metadata'].pop('creationTimestamp', None)
+            dic_yaml['metadata'].pop('namespace', None)
+            dic_yaml['metadata'].pop('resourceVersion', None)
+            dic_yaml['metadata'].pop('selfLink', None)
+            dic_yaml['metadata'].pop('uid', None)
+            dic_yaml.pop('status', None)
 
-        dic_yaml['metadata'].pop('finalizers', None)
-        dic_yaml['spec']['claimRef'].pop('uid', None)
-        dic_yaml['spec']['claimRef'].pop('resourceVersion', None)
+            dic_yaml['metadata'].pop('finalizers', None)
+            dic_yaml['spec']['claimRef'].pop('uid', None)
+            dic_yaml['spec']['claimRef'].pop('resourceVersion', None)
 
-        yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
-        with open(f'yamls/pvs/{pv}.yaml', 'w') as f:
-            f.write(yaml_to_apply)
+            file.write(yaml.dump(dic_yaml, default_flow_style=False))
 
         tools.sh(f'oc apply -f yamls/pvs/{pv}.yaml')
         print(f'{cluster_to} -> Migrado {pv}')
@@ -121,27 +120,25 @@ if yamls_errors:
 yamls_errors = []
 for pvc in pvcs_to_migrate:
     try:
-        with open(f'yamls/pvcs/{pvc}.yaml', 'r') as file:
+        with open(f'yamls/pvcs/{pvc}.yaml', 'w') as file:
             dic_yaml = yaml.load(file, Loader=yaml.FullLoader)
 
-        dic_yaml['metadata'].pop('managedFields', None)
-        dic_yaml['metadata'].pop('creationTimestamp', None)
-        dic_yaml['metadata'].pop('namespace', None)
-        dic_yaml['metadata'].pop('resourceVersion', None)
-        dic_yaml['metadata'].pop('selfLink', None)
-        dic_yaml['metadata'].pop('uid', None)
-        dic_yaml.pop('status', None)
+            dic_yaml['metadata'].pop('managedFields', None)
+            dic_yaml['metadata'].pop('creationTimestamp', None)
+            dic_yaml['metadata'].pop('namespace', None)
+            dic_yaml['metadata'].pop('resourceVersion', None)
+            dic_yaml['metadata'].pop('selfLink', None)
+            dic_yaml['metadata'].pop('uid', None)
+            dic_yaml.pop('status', None)
 
-        dic_yaml['metadata'].pop('finalizers', None)
-        dic_yaml['metadata'].pop('annotations', None)
+            dic_yaml['metadata'].pop('finalizers', None)
+            dic_yaml['metadata'].pop('annotations', None)
 
-        dic_yaml['spec']['storageClassName'] = pvc_storage_class
+            dic_yaml['spec']['storageClassName'] = pvc_storage_class
 
-        yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
-        with open(f'yamls/pvcs/{pvc}.yaml', 'w') as f:
-            f.write(yaml_to_apply)
+            file.write(yaml.dump(dic_yaml, default_flow_style=False))
 
-        tools.sh(f'oc apply -n {np} -f yamls/pvcs/{pvc}.yaml')
+        tools.sh(f'oc apply -n {namespace} -f yamls/pvcs/{pvc}.yaml')
         print(f'{cluster_to} -> Migrado {pvc}')
         tools.sh(f"""echo "{pvc}" >> {bk_file_path}""")
 
