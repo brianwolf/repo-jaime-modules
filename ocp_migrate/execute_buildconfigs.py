@@ -17,7 +17,6 @@ cluster = params['clusters']['name']
 namespace = params['clusters']['namespace']
 only = params['clusters'].get('only', [])
 ignore = params['clusters'].get('ignore', [])
-force = params['clusters'].get('force', 'false')
 
 
 ###########################################
@@ -27,7 +26,7 @@ force = params['clusters'].get('force', 'false')
 # file BK
 bk_file_path = f'/data/execute_bc_{cluster}_{namespace}.txt'
 
-if str(force).lower() == 'true' or not os.path.exists(bk_file_path):
+if not os.path.exists(bk_file_path):
     tools.sh(f'> {bk_file_path}')
 
 with open(bk_file_path, 'r') as f:

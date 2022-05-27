@@ -73,7 +73,8 @@ for ob in objects:
         continue
 
     print(f'{cluster_from} -> Obteniendo {ob}')
-    tools.sh(f'oc get {object_from} {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
+    tools.sh(
+        f'oc get {object_from} {ob} -n {namespace_from} -o yaml > yamls/{ob}.yaml')
     objects_to_migrate.append(ob)
 
 print(f'{cluster_from} -> por migrar {len(objects_to_migrate)} {object_from}')
@@ -92,20 +93,19 @@ tools.sh(f'oc new-project {namespace_to}')
 yamls_errors = []
 for ob in objects_to_migrate:
     try:
-        with open(f'yamls/{ob}.yaml', 'r') as file:
+        with open(f'yamls/{ob}.yaml', 'w') as file:
             dic_yaml = yaml.load(file, Loader=yaml.FullLoader)
-        
-        dic_yaml['metadata'].pop('managedFields', None)
-        dic_yaml['metadata'].pop('creationTimestamp', None)
-        dic_yaml['metadata'].pop('namespace', None)
-        dic_yaml['metadata'].pop('resourceVersion', None)
-        dic_yaml['metadata'].pop('selfLink', None)
-        dic_yaml['metadata'].pop('uid', None)
-        dic_yaml.pop('status', None)
 
-        yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
-        with open(f'yamls/{ob}.yaml', 'w') as f:
-            f.write(yaml_to_apply)
+            dic_yaml['metadata'].pop('managedFields', None)
+            dic_yaml['metadata'].pop('creationTimestamp', None)
+            dic_yaml['metadata'].pop('namespace', None)
+            dic_yaml['metadata'].pop('resourceVersion', None)
+            dic_yaml['metadata'].pop('selfLink', None)
+            dic_yaml['metadata'].pop('uid', None)
+            dic_yaml.pop('status', None)
+
+            yaml_to_apply = yaml.dump(dic_yaml, default_flow_style=False)
+            file.write(yaml_to_apply)
 
         tools.sh(f'oc {method_to} -n {namespace_to} -f yamls/{ob}.yaml')
         print(f'{cluster_to} -> Migrado {ob}')

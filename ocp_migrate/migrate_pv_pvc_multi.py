@@ -1,13 +1,11 @@
-from unicodedata import name
-import requests
 import tools
 
 params = tools.get_params()
 
 cluster_from = params['clusters']['from']['name']
-url_public_registry = params['clusters']['from']['url_public_registry']
 
 cluster_to = params['clusters']['to']['name']
+storage_class = params['clusters']['to']['storage_class']
 
 namespaces = [
     ob
@@ -19,15 +17,15 @@ namespaces = [
 for np in namespaces:
 
     print(f"{cluster_to} -> Generando work para {np}")
-    tools.new_jaime_work(f'migrate-is-{np}', 'ocp_migrate', 'migrate_images', {
+    tools.new_jaime_work(f'migrate-pv-pvc-{np}', 'ocp_migrate', 'migrate_pv_pvc', {
         'clusters': {
             'from': {
                 'name': cluster_from,
                 'namespace': np,
-                'url_public_registry': url_public_registry
             },
             'to': {
-                'name': cluster_to
+                'name': cluster_to,
+                'storage_class': storage_class
             }
         }
     })

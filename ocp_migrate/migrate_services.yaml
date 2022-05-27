@@ -6,4 +6,3 @@ clusters:
     ignore: <list[str] | opcional | lista de regular expresion>
   to:
     name: <str | nombre del cluster>
-    namespace: <str | nombre del namespace>
