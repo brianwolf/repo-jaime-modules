@@ -1,0 +1,7 @@
+clusters:
+  from:
+    name: <string | nombre del cluster>
+    namespace: <string | nombre del namespace>
+  to:
+    name: <string | nombre del cluster>
+    storage_class: <string | storage class a usar>

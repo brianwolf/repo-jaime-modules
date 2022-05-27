@@ -1,0 +1,12 @@
+clusters:
+  from:
+    name: <str | nombre del cluster>
+    namespace: <str | nombre del namespace>
+    object: <str | nombre del objeto, ejemplo [svc, pod, bc, dc, secret, etc]>
+    only: <list[str] | opcional | lista de regular expresion>
+    ignore: <list[str] | opcional | lista de regular expresion>
+    method: <str | opcional | metodo a usar, puede ser apply o create, por defecto es apply>
+  to:
+    name: <str | nombre del cluster>
+    namespace: <str | nombre del namespace>
+    force: <bool | volver a ejecutar el apply o create en caso de existir>
